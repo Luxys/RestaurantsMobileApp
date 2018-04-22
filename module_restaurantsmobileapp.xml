@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_restaurantsmobileapp" default="compile.module.restaurantsmobileapp">
+  <dirname property="module.restaurantsmobileapp.basedir" file="${ant.file.module_restaurantsmobileapp}"/>
+  
+  <property name="module.jdk.home.restaurantsmobileapp" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.restaurantsmobileapp" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.restaurantsmobileapp" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.restaurantsmobileapp" value="-encoding UTF-8 -source 9 -target 9 ${compiler.args}"/>
+  
+  <property name="restaurantsmobileapp.output.dir" value="${module.restaurantsmobileapp.basedir}/out/production/RestaurantsMobileApp"/>
+  <property name="restaurantsmobileapp.testoutput.dir" value="${module.restaurantsmobileapp.basedir}/out/test/RestaurantsMobileApp"/>
+  
+  <path id="restaurantsmobileapp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="restaurantsmobileapp.module.production.classpath">
+    <path refid="${module.jdk.classpath.restaurantsmobileapp}"/>
+    <path refid="library.postgresql-42.2.2.classpath"/>
+    <path refid="library.poi-3.17.classpath"/>
+  </path>
+  
+  <path id="restaurantsmobileapp.runtime.production.module.classpath">
+    <pathelement location="${restaurantsmobileapp.output.dir}"/>
+    <path refid="library.postgresql-42.2.2.classpath"/>
+    <path refid="library.poi-3.17.classpath"/>
+  </path>
+  
+  <path id="restaurantsmobileapp.module.classpath">
+    <path refid="${module.jdk.classpath.restaurantsmobileapp}"/>
+    <pathelement location="${restaurantsmobileapp.output.dir}"/>
+    <path refid="library.postgresql-42.2.2.classpath"/>
+    <path refid="library.poi-3.17.classpath"/>
+  </path>
+  
+  <path id="restaurantsmobileapp.runtime.module.classpath">
+    <pathelement location="${restaurantsmobileapp.testoutput.dir}"/>
+    <pathelement location="${restaurantsmobileapp.output.dir}"/>
+    <path refid="library.postgresql-42.2.2.classpath"/>
+    <path refid="library.poi-3.17.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.restaurantsmobileapp">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.restaurantsmobileapp">
+    <patternset refid="excluded.from.module.restaurantsmobileapp"/>
+  </patternset>
+  
+  <path id="restaurantsmobileapp.module.sourcepath">
+    <dirset dir="${module.restaurantsmobileapp.basedir}/../../RestaurantsMobileApp">
+      <include name="RestaurantsMobileApp"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.restaurantsmobileapp" depends="compile.module.restaurantsmobileapp.production,compile.module.restaurantsmobileapp.tests" description="Compile module RestaurantsMobileApp"/>
+  
+  <target name="compile.module.restaurantsmobileapp.production" depends="register.custom.compilers" description="Compile module RestaurantsMobileApp; production classes">
+    <mkdir dir="${restaurantsmobileapp.output.dir}"/>
+    <javac2 destdir="${restaurantsmobileapp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.restaurantsmobileapp}/javac">
+      <compilerarg line="${compiler.args.restaurantsmobileapp}"/>
+      <bootclasspath refid="restaurantsmobileapp.module.bootclasspath"/>
+      <classpath refid="restaurantsmobileapp.module.production.classpath"/>
+      <src refid="restaurantsmobileapp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.restaurantsmobileapp"/>
+    </javac2>
+    
+    <copy todir="${restaurantsmobileapp.output.dir}">
+      <fileset dir="${module.restaurantsmobileapp.basedir}">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.restaurantsmobileapp.tests" depends="register.custom.compilers,compile.module.restaurantsmobileapp.production" description="compile module RestaurantsMobileApp; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.restaurantsmobileapp" description="cleanup module">
+    <delete dir="${restaurantsmobileapp.output.dir}"/>
+    <delete dir="${restaurantsmobileapp.testoutput.dir}"/>
+  </target>
+</project>
