@@ -3,13 +3,17 @@ package lu.uni.restaurantsmobileapp;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
-import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.HashMap;
 
 public class ExcelManagement {
 
     public static void readSheet(File file) {
         try {
+
+           /*
+           Load Excel Sheet
+            */
             Workbook wb = WorkbookFactory.create(file);
             Sheet sheet = wb.getSheetAt(0);
             Row row;
@@ -31,7 +35,9 @@ public class ExcelManagement {
             }
 
 
-
+            /*
+            Read cells
+             */
             for(int r = 3; r < 20; r++) {
                 row = sheet.getRow(r);
                 if(row != null) {
@@ -113,29 +119,78 @@ public class ExcelManagement {
                         }
                     }
 
-                    //test
-                    PreparedStatement statement = PostgreSQLJDBC.getConnection().prepareStatement("INSERT INTO" +
-                            " restaurant  (restaurantname, category, meal, cuisine, todayMenu, price, wifi," +
-                            " menuOnWebsite, haveDailyMenu, rating, facebook, menuOnFb, fbMenu, fbPage) " +
-                            " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    // Does Restaurant already exist?
+                    int id = PostgreSQLJDBC.restaurantExists(name);
+                    if (id == -1) {
 
-                    statement.setObject(1, name, Types.VARCHAR);
-                    statement.setObject(2, category, Types.VARCHAR);
-                    statement.setObject(3, meal, Types.VARCHAR);
-                    statement.setObject(4, cuisine, Types.VARCHAR);
-                    statement.setObject(5, todayMenu, Types.BOOLEAN);
-                    statement.setObject(6, price, Types.VARCHAR);
-                    statement.setObject(7, wifi, Types.BOOLEAN);
-                    statement.setObject(8, menuOnWebsite, Types.BOOLEAN);
-                    statement.setObject(9, haveDailyMenu, Types.BOOLEAN);
-                    statement.setObject(10, rating, Types.DOUBLE);
-                    statement.setObject(11, facebook, Types.BOOLEAN);
-                    statement.setObject(12, menuOnFB, Types.BOOLEAN);
-                    statement.setObject(13, fbMenu, Types.VARCHAR);
-                    statement.setObject(14, fbPage, Types.VARCHAR);
+                        /*
+                        Insert new restaurant
+                         */
+                        HashMap<String, SQLObject> map = new HashMap <>();
+                        map.put("restaurantname", new SQLObject(name, Types.VARCHAR));
+                        map.put("category", new SQLObject(category, Types.VARCHAR));
+                        map.put("meal", new SQLObject(meal, Types.VARCHAR));
+                        map.put("cuisine", new SQLObject(cuisine, Types.VARCHAR));
+                        map.put("todaymenu", new SQLObject(todayMenu, Types.BOOLEAN));
+                        map.put("price", new SQLObject(price, Types.VARCHAR));
+                        map.put("wifi", new SQLObject(wifi, Types.BOOLEAN));
+                        map.put("menuonwebsite", new SQLObject(menuOnWebsite, Types.BOOLEAN));
+                        map.put("havedailymenu", new SQLObject(haveDailyMenu, Types.BOOLEAN));
+                        map.put("rating", new SQLObject(rating, Types.NUMERIC));
+                        map.put("facebook", new SQLObject(facebook, Types.BOOLEAN));
+                        map.put("menuonfb", new SQLObject(menuOnFB , Types.BOOLEAN));
+                        map.put("fbmenu", new SQLObject(fbMenu, Types.VARCHAR));
+                        map.put("fbpage", new SQLObject(fbPage, Types.VARCHAR));
+                        PostgreSQLJDBC.insert("restaurant", map);
+                        System.out.println("Database> Successfully added new restaurant " + name.toUpperCase());
 
-                    statement.executeUpdate();
-                    System.out.println("Database> Updated table 'restaurant' successfully");
+
+
+                    } else {
+
+                        /*
+                        Restaurant already exist: update?
+                         */
+                        HashMap<String, Object> map = PostgreSQLJDBC.getRestaurant(id);
+                        if (!((String) map.get("category")).equalsIgnoreCase(category)) {
+                            PostgreSQLJDBC.update("public.restaurant", "category", new SQLObject(category, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) map.get("meal")).equalsIgnoreCase(meal)) {
+                            PostgreSQLJDBC.update("public.restaurant", "meal", new SQLObject(meal, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) map.get("cuisine")).equalsIgnoreCase(cuisine)) {
+                            PostgreSQLJDBC.update("public.restaurant", "cuisine", new SQLObject(cuisine, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) map.get("price")).equalsIgnoreCase(price)) {
+                            PostgreSQLJDBC.update("public.restaurant", "price", new SQLObject(price, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) map.get("fbmenu")).equalsIgnoreCase(fbMenu)) {
+                            PostgreSQLJDBC.update("public.restaurant", "fbmenu", new SQLObject(fbMenu, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) map.get("fbpage")).equalsIgnoreCase(fbPage)) {
+                            PostgreSQLJDBC.update("public.restaurant", "fbpage", new SQLObject(fbPage, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("wifi") == wifi)) {
+                            PostgreSQLJDBC.update("public.restaurant", "wifi", new SQLObject(wifi, Types.BOOLEAN), "restaurantid", id);
+                        }
+                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("todaymenu") == todayMenu)) {
+                            PostgreSQLJDBC.update("public.restaurant", "todaymenu", new SQLObject(todayMenu, Types.BOOLEAN), "restaurantid", id);
+                        }
+                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("facebook") == facebook)) {
+                            PostgreSQLJDBC.update("public.restaurant", "facebook", new SQLObject(facebook, Types.BOOLEAN), "restaurantid", id);
+                        }
+                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("menuonfb") == menuOnFB)) {
+                            PostgreSQLJDBC.update("public.restaurant", "menuonfb", new SQLObject(menuOnFB, Types.BOOLEAN), "restaurantid", id);
+                        }
+                        if (!((double) PostgreSQLJDBC.getRestaurant(id).get("rating") == rating)) {
+                            PostgreSQLJDBC.update("public.restaurant", "rating", new SQLObject(rating, Types.NUMERIC), "restaurantid", id);
+                        }
+
+
+                    }
+
+
+
                 }
             }
         } catch(Exception ioe) {
