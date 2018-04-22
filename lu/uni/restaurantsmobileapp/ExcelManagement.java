@@ -113,6 +113,7 @@ public class ExcelManagement {
                         }
                     }
 
+                    //test
                     PreparedStatement statement = PostgreSQLJDBC.getConnection().prepareStatement("INSERT INTO" +
                             " restaurant  (restaurantname, category, meal, cuisine, todayMenu, price, wifi," +
                             " menuOnWebsite, haveDailyMenu, rating, facebook, menuOnFb, fbMenu, fbPage) " +
