@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="curvesapi-1.04">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../poi-bin-3.17-20170915/poi-3.17/ooxml-lib/curvesapi-1.04.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
