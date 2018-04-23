@@ -158,6 +158,46 @@ public class PostgreSQLJDBC {
         return map;
     }
 
+    public static HashMap<String, Object> getLocation(int id) {
+        HashMap<String, Object> map = new HashMap <>();
+        String sql = "SELECT * FROM public.location WHERE restaurantid=?";
+        PreparedStatement statement = null;
+        try {
+            statement = getConnection().prepareStatement(sql);
+            statement.setObject(1, id, Types.NUMERIC);
+            ResultSet res = statement.executeQuery();
+
+
+            if (res.next()) {
+                map.put("streetnumber", res.getString("streetnumber"));
+                map.put("streetname", res.getString("streetname"));
+                map.put("city", res.getString("city"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    public static HashMap<String, Object> getGPSPosition(int id, String type) {
+        HashMap<String, Object> map = new HashMap <>();
+        String sql = "SELECT * FROM public.gpsposition WHERE " + type + "id=?";
+        PreparedStatement statement = null;
+        try {
+            statement = getConnection().prepareStatement(sql);
+            statement.setObject(1, id, Types.NUMERIC);
+            ResultSet res = statement.executeQuery();
+
+
+            if (res.next()) {
+                map.put("longitude", res.getString("longitude"));
+                map.put("latitude", res.getString("latitude"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
 
     public static void update(String table, String colname, SQLObject obj, String where, int id) {
         String sql = "UPDATE " + table + " SET " + colname + "=?" + " WHERE " + where + "=" + id;

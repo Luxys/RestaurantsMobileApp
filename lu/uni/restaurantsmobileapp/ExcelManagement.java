@@ -213,22 +213,49 @@ public class ExcelManagement {
                         if (!((String) map.get("fbpage")).equalsIgnoreCase(fbPage)) {
                             PostgreSQLJDBC.update("public.restaurant", "fbpage", new SQLObject(fbPage, Types.VARCHAR), "restaurantid", id);
                         }
-                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("wifi") == wifi)) {
+                        if (!((boolean) map.get("wifi") == wifi)) {
                             PostgreSQLJDBC.update("public.restaurant", "wifi", new SQLObject(wifi, Types.BOOLEAN), "restaurantid", id);
                         }
-                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("todaymenu") == todayMenu)) {
+                        if (!((boolean) map.get("todaymenu") == todayMenu)) {
                             PostgreSQLJDBC.update("public.restaurant", "todaymenu", new SQLObject(todayMenu, Types.BOOLEAN), "restaurantid", id);
                         }
-                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("facebook") == facebook)) {
+                        if (!((boolean) map.get("facebook") == facebook)) {
                             PostgreSQLJDBC.update("public.restaurant", "facebook", new SQLObject(facebook, Types.BOOLEAN), "restaurantid", id);
                         }
-                        if (!((boolean) PostgreSQLJDBC.getRestaurant(id).get("menuonfb") == menuOnFB)) {
+                        if (!((boolean) map.get("menuonfb") == menuOnFB)) {
                             PostgreSQLJDBC.update("public.restaurant", "menuonfb", new SQLObject(menuOnFB, Types.BOOLEAN), "restaurantid", id);
                         }
-                        if (!((double) PostgreSQLJDBC.getRestaurant(id).get("rating") == rating)) {
+                        if (!((double) map.get("rating") == rating)) {
                             PostgreSQLJDBC.update("public.restaurant", "rating", new SQLObject(rating, Types.NUMERIC), "restaurantid", id);
                         }
 
+
+
+                        /*
+                        Location update?
+                         */
+                        HashMap<String, Object> loc = PostgreSQLJDBC.getLocation(id);
+                        if (!((String) loc.get("streetname")).equalsIgnoreCase(streetName)) {
+                            PostgreSQLJDBC.update("public.location", "streetname", new SQLObject(streetName, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) loc.get("streetnumber")).equalsIgnoreCase(streetNumber)) {
+                            PostgreSQLJDBC.update("public.location", "streetnumber", new SQLObject(streetNumber, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) loc.get("city")).equalsIgnoreCase(city)) {
+                            PostgreSQLJDBC.update("public.location", "city", new SQLObject(city, Types.VARCHAR), "restaurantid", id);
+                        }
+
+
+                         /*
+                        GPS position update?
+                         */
+                        HashMap<String, Object> gps = PostgreSQLJDBC.getLocation(id);
+                        if (!((String) gps.get("longitude")).equalsIgnoreCase(longitude)) {
+                            PostgreSQLJDBC.update("public.gpsposition", "longitude", new SQLObject(longitude, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) gps.get("latitude")).equalsIgnoreCase(streetNumber)) {
+                            PostgreSQLJDBC.update("public.gpsposition`", "latitude", new SQLObject(latitude, Types.VARCHAR), "restaurantid", id);
+                        }
 
                     }
 
