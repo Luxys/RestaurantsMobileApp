@@ -41,19 +41,32 @@ public class ExcelManagement {
             for(int r = 3; r < 20; r++) {
                 row = sheet.getRow(r);
                 if(row != null) {
+
+                    /*
+                    Location
+                     */
+                    String streetNumber = null;
+                    String streetName = null;
+                    String city = null;
+                    String longitude = null;
+                    String latitude = null;
+
+                    /*
+                    Contact info
+                     */
+                    boolean wifi = false;
+                    String phone = null;
+                    String mail = null;
+                    String website = null;
+
                     String name = null;
+                    String price = null;
                     String category = null;
                     String meal = null;
                     String cuisine = null;
                     boolean todayMenu = false;
-                    String location = null;
-                    String price = null;
-                    boolean wifi = false;
-                    String phone = null;
-                    String mail = null;
                     boolean menuOnWebsite = false;
                     boolean haveDailyMenu = false;
-                    String website = null;
                     double rating = 0;
                     boolean facebook = false;
                     boolean menuOnFB = false;
@@ -78,41 +91,53 @@ public class ExcelManagement {
                                 todayMenu = cell.getBooleanCellValue();
                                 break;
                             case 5:
-                                location = cell.getStringCellValue();
+                                streetNumber = cell.getStringCellValue();
                                 break;
                             case 6:
-                                price = cell.getStringCellValue();
+                                streetName = cell.getStringCellValue();
                                 break;
                             case 7:
-                                wifi = cell.getBooleanCellValue();
+                                city = cell.getStringCellValue();
                                 break;
                             case 8:
-                                phone = cell.getStringCellValue();
+                                longitude = cell.getStringCellValue();
                                 break;
                             case 9:
-                                mail = cell.getStringCellValue();
+                                latitude = cell.getStringCellValue();
                                 break;
                             case 10:
-                                menuOnWebsite = cell.getBooleanCellValue();
+                                price = cell.getStringCellValue();
                                 break;
                             case 11:
-                                haveDailyMenu = cell.getBooleanCellValue();
+                                wifi = cell.getBooleanCellValue();
                                 break;
                             case 12:
-                                website = cell.getStringCellValue();
+                                phone = cell.getStringCellValue();
                                 break;
                             case 13:
-                                rating = cell.getNumericCellValue();
+                                mail = cell.getStringCellValue();
                                 break;
                             case 14:
-                                facebook = cell.getBooleanCellValue();
+                                menuOnWebsite = cell.getBooleanCellValue();
                                 break;
                             case 15:
-                                menuOnFB = cell.getBooleanCellValue();
+                                haveDailyMenu = cell.getBooleanCellValue();
                                 break;
                             case 16:
-                                fbMenu = cell.getStringCellValue();
+                                website = cell.getStringCellValue();
+                                break;
                             case 17:
+                                rating = cell.getNumericCellValue();
+                                break;
+                            case 18:
+                                facebook = cell.getBooleanCellValue();
+                                break;
+                            case 19:
+                                menuOnFB = cell.getBooleanCellValue();
+                                break;
+                            case 20:
+                                fbMenu = cell.getStringCellValue();
+                            case 21:
                                 fbPage = cell.getStringCellValue();
                                 break;
 
@@ -143,6 +168,24 @@ public class ExcelManagement {
                         map.put("fbpage", new SQLObject(fbPage, Types.VARCHAR));
                         PostgreSQLJDBC.insert("restaurant", map);
                         System.out.println("Database> Successfully added new restaurant " + name.toUpperCase());
+
+
+                        /*
+                        Insert new location
+                         */
+                        HashMap<String, SQLObject> loc = new HashMap <>();
+                        loc.put("streetnumber", new SQLObject(streetNumber, Types.VARCHAR));
+                        loc.put("streetname", new SQLObject(streetName, Types.VARCHAR));
+                        loc.put("city", new SQLObject(city, Types.VARCHAR));
+                        PostgreSQLJDBC.insert("location", loc);
+
+                        /*
+                        Insert new GPS position
+                         */
+                        HashMap<String, SQLObject> gps = new HashMap <>();
+                        gps.put("longitude", new SQLObject(longitude, Types.VARCHAR));
+                        gps.put("latitude", new SQLObject(latitude, Types.VARCHAR));
+                        PostgreSQLJDBC.insert("gpsposition", gps);
 
 
 
@@ -197,6 +240,9 @@ public class ExcelManagement {
             ioe.printStackTrace();
         }
     }
+
+
+
 
 
 }
