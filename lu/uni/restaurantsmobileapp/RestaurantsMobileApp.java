@@ -9,6 +9,7 @@ public class RestaurantsMobileApp {
         File file = new File("C:\\Users\\lucas\\Documents\\RestaurantsMobileApp\\DA.xlsx");
         ExcelManagement.readSheet(file);
         PostgreSQLJDBC.closeConnection();
+
     }
 
 

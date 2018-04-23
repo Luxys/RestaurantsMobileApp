@@ -158,9 +158,14 @@ public class PostgreSQLJDBC {
         return map;
     }
 
+    /**
+     * Get location values
+     * @param id LOCATIONID
+     * @return
+     */
     public static HashMap<String, Object> getLocation(int id) {
         HashMap<String, Object> map = new HashMap <>();
-        String sql = "SELECT * FROM public.location WHERE restaurantid=?";
+        String sql = "SELECT * FROM public.location WHERE locationid=?";
         PreparedStatement statement = null;
         try {
             statement = getConnection().prepareStatement(sql);
@@ -179,9 +184,15 @@ public class PostgreSQLJDBC {
         return map;
     }
 
-    public static HashMap<String, Object> getGPSPosition(int id, String type) {
+    /**
+     * Get GPS position values
+     * @param id GPSPOSITIONID
+     * @return
+     */
+    public static HashMap<String, Object> getGPSPosition(int id) {
+
         HashMap<String, Object> map = new HashMap <>();
-        String sql = "SELECT * FROM public.gpsposition WHERE " + type + "id=?";
+        String sql = "SELECT * FROM public.gpsposition WHERE gpspositionid=?";
         PreparedStatement statement = null;
         try {
             statement = getConnection().prepareStatement(sql);
@@ -199,14 +210,127 @@ public class PostgreSQLJDBC {
         return map;
     }
 
+    /**
+     * Get location id from a restaurant id
+     * @param restaurantId
+     * @return locationid
+     */
+    public static int getLocationId(int restaurantId) {
+        HashMap<String, Object> map = new HashMap <>();
+        String sql = "SELECT locationid FROM public.restaurant WHERE restaurantid=?";
+        PreparedStatement statement = null;
+        try {
+            statement = getConnection().prepareStatement(sql);
+            statement.setObject(1, restaurantId, Types.NUMERIC);
+            ResultSet res = statement.executeQuery();
+
+
+            if (res.next()) {
+                return  res.getInt("locationid");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Get gps position id from a restaurant id
+     * @param restaurantId
+     * @return gpspositionid
+     */
+    public static int getPositionId(int restaurantId) {
+        HashMap<String, Object> map = new HashMap <>();
+        String sql = "SELECT gpspositionid FROM public.restaurant WHERE restaurantid=?";
+        PreparedStatement statement = null;
+        try {
+            statement = getConnection().prepareStatement(sql);
+            statement.setObject(1, restaurantId, Types.NUMERIC);
+            ResultSet res = statement.executeQuery();
+
+
+            if (res.next()) {
+                return  res.getInt("gpspositionid");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+    /**
+     * Check if location already exist and get its id
+     * @param streetNumber
+     * @param streetName
+     * @param city
+     * @return
+     */
+    public static int askForLocationId(String streetNumber, String streetName, String city) {
+        String sql = "SELECT locationid FROM public.location WHERE streetnumber=? and streetname=? and city=?";
+        PreparedStatement statement = null;
+        try {
+            statement = getConnection().prepareStatement(sql);
+            statement.setObject(1, streetNumber, Types.VARCHAR);
+            statement.setObject(2, streetName, Types.VARCHAR);
+            statement.setObject(3, city, Types.VARCHAR);
+            ResultSet res = statement.executeQuery();
+
+
+            if (res.next()) {
+                return res.getInt("locationid");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        HashMap<String, SQLObject> map = new HashMap <>();
+        map.put("streetnumber", new SQLObject(streetNumber, Types.VARCHAR));
+        map.put("streetname", new SQLObject(streetName, Types.VARCHAR));
+        map.put("city", new SQLObject(city, Types.VARCHAR));
+        insert("location", map);
+        return askForLocationId(streetNumber, streetName, city);
+    }
+
+
+    /**
+     * Check if position already exist and get its id
+     * @param longitude
+     * @param latitude
+     * @return
+     */
+    public static int askForPositionId(String longitude, String latitude) {
+        String sql = "SELECT gpspositionid FROM public.gpsposition WHERE longitude=? and latitude=?";
+        PreparedStatement statement = null;
+        try {
+            statement = getConnection().prepareStatement(sql);
+            statement.setObject(1, longitude, Types.VARCHAR);
+            statement.setObject(2, latitude, Types.VARCHAR);
+            ResultSet res = statement.executeQuery();
+
+
+            if (res.next()) {
+                return res.getInt("gpspositionid");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        HashMap<String, SQLObject> map = new HashMap <>();
+        map.put("longitude", new SQLObject(longitude, Types.VARCHAR));
+        map.put("latitude", new SQLObject(latitude, Types.VARCHAR));
+        insert("gpsposition", map);
+        return askForPositionId(longitude, latitude);
+    }
+
     public static void update(String table, String colname, SQLObject obj, String where, int id) {
         String sql = "UPDATE " + table + " SET " + colname + "=?" + " WHERE " + where + "=" + id;
         PreparedStatement statement = null;
         try {
             statement = getConnection().prepareStatement(sql);
             statement.setObject(1, obj.getObject(), obj.getType());
-            statement.executeUpdate();
-            System.out.println("Database> Successfully updated '" + colname + "' where id=" + id);
+            System.out.println(statement);
+            System.out.println(obj.getType());
+            int c = statement.executeUpdate();
+            System.out.println("Database> Successfully updated '" + colname + "' where id=" + id + " ; " + c +" lines changed");
 
         } catch(SQLException e) {
             e.printStackTrace();

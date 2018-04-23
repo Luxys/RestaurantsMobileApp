@@ -38,7 +38,7 @@ public class ExcelManagement {
             /*
             Read cells
              */
-            for(int r = 3; r < 20; r++) {
+            for(int r = 2; r < 20; r++) {
                 row = sheet.getRow(r);
                 if(row != null) {
 
@@ -169,23 +169,25 @@ public class ExcelManagement {
                         PostgreSQLJDBC.insert("restaurant", map);
                         System.out.println("Database> Successfully added new restaurant " + name.toUpperCase());
 
+                        /*
+                        Update ID
+                         */
+                        id = PostgreSQLJDBC.restaurantExists(name);
 
                         /*
                         Insert new location
                          */
-                        HashMap<String, SQLObject> loc = new HashMap <>();
-                        loc.put("streetnumber", new SQLObject(streetNumber, Types.VARCHAR));
-                        loc.put("streetname", new SQLObject(streetName, Types.VARCHAR));
-                        loc.put("city", new SQLObject(city, Types.VARCHAR));
-                        PostgreSQLJDBC.insert("location", loc);
+                        int locationId = PostgreSQLJDBC.askForLocationId(streetNumber, streetName, city);
 
                         /*
                         Insert new GPS position
                          */
-                        HashMap<String, SQLObject> gps = new HashMap <>();
-                        gps.put("longitude", new SQLObject(longitude, Types.VARCHAR));
-                        gps.put("latitude", new SQLObject(latitude, Types.VARCHAR));
-                        PostgreSQLJDBC.insert("gpsposition", gps);
+                        int gpsId = PostgreSQLJDBC.askForPositionId(longitude, latitude);
+                        /*
+                        Update infos
+                         */
+                        PostgreSQLJDBC.update("restaurant", "gpspositionid", new SQLObject(gpsId, Types.NUMERIC), "restaurantid", id);
+                        PostgreSQLJDBC.update("restaurant", "locationid", new SQLObject(locationId, Types.NUMERIC), "restaurantid", id);
 
 
 
@@ -234,27 +236,29 @@ public class ExcelManagement {
                         /*
                         Location update?
                          */
-                        HashMap<String, Object> loc = PostgreSQLJDBC.getLocation(id);
+                        int locationId = PostgreSQLJDBC.getLocationId(id);
+                        HashMap<String, Object> loc = PostgreSQLJDBC.getLocation(locationId);
                         if (!((String) loc.get("streetname")).equalsIgnoreCase(streetName)) {
-                            PostgreSQLJDBC.update("public.location", "streetname", new SQLObject(streetName, Types.VARCHAR), "restaurantid", id);
+                            PostgreSQLJDBC.update("public.location", "streetname", new SQLObject(streetName, Types.VARCHAR), "locationid", locationId);
                         }
                         if (!((String) loc.get("streetnumber")).equalsIgnoreCase(streetNumber)) {
-                            PostgreSQLJDBC.update("public.location", "streetnumber", new SQLObject(streetNumber, Types.VARCHAR), "restaurantid", id);
+                            PostgreSQLJDBC.update("public.location", "streetnumber", new SQLObject(streetNumber, Types.VARCHAR), "locationid", locationId);
                         }
                         if (!((String) loc.get("city")).equalsIgnoreCase(city)) {
-                            PostgreSQLJDBC.update("public.location", "city", new SQLObject(city, Types.VARCHAR), "restaurantid", id);
+                            PostgreSQLJDBC.update("public.location", "city", new SQLObject(city, Types.VARCHAR), "locationid", locationId);
                         }
 
 
                          /*
                         GPS position update?
                          */
-                        HashMap<String, Object> gps = PostgreSQLJDBC.getLocation(id);
+                         int gpsId = PostgreSQLJDBC.getPositionId(id);
+                        HashMap<String, Object> gps = PostgreSQLJDBC.getGPSPosition(gpsId);
                         if (!((String) gps.get("longitude")).equalsIgnoreCase(longitude)) {
-                            PostgreSQLJDBC.update("public.gpsposition", "longitude", new SQLObject(longitude, Types.VARCHAR), "restaurantid", id);
+                            PostgreSQLJDBC.update("public.gpsposition", "longitude", new SQLObject(longitude, Types.VARCHAR), "gpspositionid", gpsId);
                         }
-                        if (!((String) gps.get("latitude")).equalsIgnoreCase(streetNumber)) {
-                            PostgreSQLJDBC.update("public.gpsposition`", "latitude", new SQLObject(latitude, Types.VARCHAR), "restaurantid", id);
+                        if (!((String) gps.get("latitude")).equalsIgnoreCase(latitude)) {
+                            PostgreSQLJDBC.update("public.gpsposition", "latitude", new SQLObject(latitude, Types.VARCHAR), "gpspositionid", gpsId);
                         }
 
                     }
