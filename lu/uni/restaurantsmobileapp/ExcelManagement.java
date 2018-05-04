@@ -59,6 +59,9 @@ public class ExcelManagement {
                     String mail = null;
                     String website = null;
 
+                    /*
+                    Restaurant
+                     */
                     String name = null;
                     String price = null;
                     String category = null;
@@ -72,6 +75,9 @@ public class ExcelManagement {
                     boolean menuOnFB = false;
                     String fbMenu = null;
                     String fbPage = null;
+                    boolean hasNewsletter = false;
+                    String newsletter = null;
+
                     for(int c = 0; c < cols; c++) {
                         cell = row.getCell((short)c);
                         if(cell != null) switch (c) {
@@ -137,10 +143,16 @@ public class ExcelManagement {
                                 break;
                             case 20:
                                 fbMenu = cell.getStringCellValue();
+                                break;
                             case 21:
                                 fbPage = cell.getStringCellValue();
                                 break;
-
+                            case 22:
+                                hasNewsletter = cell.getBooleanCellValue();
+                                break;
+                            case 23:
+                                newsletter = cell.getStringCellValue();
+                                break;
                         }
                     }
 
@@ -166,6 +178,8 @@ public class ExcelManagement {
                         map.put("menuonfb", new SQLObject(menuOnFB , Types.BOOLEAN));
                         map.put("fbmenu", new SQLObject(fbMenu, Types.VARCHAR));
                         map.put("fbpage", new SQLObject(fbPage, Types.VARCHAR));
+                        map.put("hasnewsletter", new SQLObject(hasNewsletter, Types.BOOLEAN));
+                        map.put("newsletter", new SQLObject(newsletter, Types.VARCHAR));
                         PostgreSQLJDBC.insert("restaurant", map);
                         System.out.println("Database> Successfully added new restaurant " + name.toUpperCase());
 
@@ -183,6 +197,16 @@ public class ExcelManagement {
                         Insert new GPS position
                          */
                         int gpsId = PostgreSQLJDBC.askForPositionId(longitude, latitude);
+
+                        /*
+                        Insert new contactInfo
+                         */
+                        HashMap<String, SQLObject> ci = new HashMap<String, SQLObject>();
+                        ci.put("phone", new SQLObject(phone, Types.VARCHAR));
+                        ci.put("mail", new SQLObject(mail, Types.VARCHAR));
+                        ci.put("website", new SQLObject(website, Types.VARCHAR));
+                        PostgreSQLJDBC.insert("contactinfo", ci);
+
                         /*
                         Update infos
                          */
@@ -214,6 +238,12 @@ public class ExcelManagement {
                         }
                         if (!((String) map.get("fbpage")).equalsIgnoreCase(fbPage)) {
                             PostgreSQLJDBC.update("public.restaurant", "fbpage", new SQLObject(fbPage, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((String) map.get("newsletter")).equalsIgnoreCase(newsletter)) {
+                            PostgreSQLJDBC.update("public.restaurant", "newsletter", new SQLObject(newsletter, Types.VARCHAR), "restaurantid", id);
+                        }
+                        if (!((boolean) map.get("hasnewsletter") == hasNewsletter)) {
+                            PostgreSQLJDBC.update("public.restaurant", "hasnewsletter", new SQLObject(hasNewsletter, Types.BOOLEAN), "restaurantid", id);
                         }
                         if (!((boolean) map.get("wifi") == wifi)) {
                             PostgreSQLJDBC.update("public.restaurant", "wifi", new SQLObject(wifi, Types.BOOLEAN), "restaurantid", id);
@@ -266,6 +296,8 @@ public class ExcelManagement {
                             locationId = PostgreSQLJDBC.askForPositionId(longitude, latitude);
                             PostgreSQLJDBC.update("restaurant", "gpspositionid", new SQLObject(gpsId, Types.NUMERIC), "restaurantid", id);
                         }
+
+
 
                     }
 

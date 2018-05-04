@@ -38,6 +38,7 @@ public class PostgreSQLJDBC {
         }
     }
 
+
     /**
      * Get the database connection
      * @return
@@ -138,7 +139,7 @@ public class PostgreSQLJDBC {
             ResultSet res = statement.executeQuery();
 
 
-            if (res.next()) {
+            while (res.next()) {
                 map.put("category", res.getString("category"));
                 map.put("meal", res.getString("meal"));
                 map.put("cuisine", res.getString("cuisine"));
@@ -151,6 +152,8 @@ public class PostgreSQLJDBC {
                 map.put("menuonfb", res.getBoolean("menuonfb"));
                 map.put("fbmenu", res.getString("fbmenu"));
                 map.put("fbpage", res.getString("fbpage"));
+                map.put("hasnewsletter", res.getBoolean("hasnewsletter"));
+                map.put("newsletter", res.getString("newsletter"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
