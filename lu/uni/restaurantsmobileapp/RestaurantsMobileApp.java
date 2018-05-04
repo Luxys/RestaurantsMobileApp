@@ -6,7 +6,7 @@ public class RestaurantsMobileApp {
 
     public static void main(String[] args) {
         PostgreSQLJDBC.openConnection();
-        File file = new File("C:\\Users\\lucas\\Documents\\RestaurantsMobileApp\\DA.xlsx");
+        File file = new File("C:\\Users\\lucas\\Documents\\RestaurantsMobileApp\\DA.xlsx"); // file
         ExcelManagement.readSheet(file);
         PostgreSQLJDBC.closeConnection();
 
